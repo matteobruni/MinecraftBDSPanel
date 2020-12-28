@@ -6,10 +6,12 @@ const btnSend = document.getElementById("btnSend");
 const btnClear = document.getElementById("btnClear");
 const output = document.getElementById("output");
 const gameMode = document.getElementById("gameMode");
+const world = document.getElementById("world");
 const difficulty = document.getElementById("difficulty");
 const users = document.getElementById("users");
 const fastTarget = document.getElementById("fastTarget");
-const txtPath = document.getElementById("txtPath");
+const txtBdsPath = document.getElementById("txtBdsPath");
+const txtPapyrusPath = document.getElementById("txtPapyrusPath");
 const txtConsole = document.getElementById("txtConsole");
 const btnFullSet = document.getElementById("btnFullSet");
 const btnEnchantHelmet = document.getElementById("btnEnchantHelmet");
@@ -23,6 +25,8 @@ const btnEnchantShield = document.getElementById("btnEnchantShield");
 const btnThunder = document.getElementById("btnThunder");
 const btnGiveStack = document.getElementById("btnGiveStack");
 
+let config;
+
 const sendCommand = () => {
     socket.emit("cmd", txtConsole.value);
 
@@ -34,7 +38,14 @@ const sendQuickCommand = (cmd) => {
 };
 
 const updateConfig = () => {
-    socket.emit("path", txtPath.value);
+    if (!config) {
+        config = {};
+    }
+
+    config.bdsPath = txtBdsPath.value;
+    config.papyrusCsPath = txtPapyrusPath.value;
+
+    socket.emit("config", JSON.stringify(config));
 }
 
 socket.on("data", (data) => {
@@ -42,8 +53,11 @@ socket.on("data", (data) => {
     output.scrollTop = output.scrollHeight;
 });
 
-socket.on("path", (data) => {
-    txtPath.value = data;
+socket.on("config", (data) => {
+    config = JSON.parse(data);
+
+    txtBdsPath.value = config.bdsPath;
+    txtPapyrusPath.value = config.papyrusCsPath;
 });
 
 socket.on("game", (data) => {
@@ -51,6 +65,7 @@ socket.on("game", (data) => {
 
     gameMode.innerText = game.mode;
     difficulty.innerText = game.difficulty;
+    world.innerText = game.world;
 
     users.innerHTML = "";
     fastTarget.innerHTML = "";
@@ -91,7 +106,13 @@ btnStop.addEventListener("click", () => {
     socket.emit("stop");
 });
 
-txtPath.addEventListener("keydown", (evt) => {
+txtBdsPath.addEventListener("keydown", (evt) => {
+    if ((evt.keyCode || evt.code) === 13) {
+        updateConfig();
+    }
+});
+
+txtPapyrusPath.addEventListener("keydown", (evt) => {
     if ((evt.keyCode || evt.code) === 13) {
         updateConfig();
     }

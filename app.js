@@ -14,15 +14,18 @@ const io = socketIO(http);
 
 //app.use(helmet()); // Safari requires https, probably a bug
 
-let mbdsProc, bdsPath, bufLine = "", giving;
+let mbdsProc, appConfig, bufLine = "", giving;
 const game = {
     connectedUsers: []
 };
 
 const writeConfig = () => {
-    fs.writeFileSync("./config.json", JSON.stringify({
-        path: bdsPath
-    }));
+    fs.writeFileSync("./config.json", JSON.stringify(appConfig));
+};
+
+const ServerType = {
+    Windows: 0,
+    Ubuntu: 1
 };
 
 if (!fs.existsSync("./config.json")) {
@@ -30,10 +33,18 @@ if (!fs.existsSync("./config.json")) {
 }
 
 fs.readFile(configPath, (err, data) => {
-    const bds = JSON.parse(data.toString("utf-8"));
+    try {
+        appConfig = JSON.parse(data.toString("utf-8"));
+    } catch (e) {
+        appConfig = undefined;
+    }
 
-    if (bds.path) {
-        bdsPath = bds.path;
+    if (!appConfig) {
+        appConfig = {
+            bdsPath: "",
+            papyrusCsPath: "",
+            type: ServerType.Windows
+        };
     }
 
     updateConfig();
@@ -60,6 +71,17 @@ const difficultyRegex = /Difficulty: \d (\w+)/i;
 const connectedRegex = /Player connected: ([^,]+),/i;
 const disconnectedRegex = /Player disconnected: ([^,]+),/i;
 const gaveRegex = /Gave (.*) \* \d+/i;
+const openingWorldRegex = /opening worlds\/(.*)\/db/i;
+
+const updateGameWorld = (msg) => {
+    let matches = msg.match(openingWorldRegex);
+
+    if (matches) {
+        game.world = matches[1];
+
+        updateGameData();
+    }
+}
 
 const updateGameMode = (msg) => {
     let matches = msg.match(gameModeRegex);
@@ -141,8 +163,8 @@ const updateItems = (msg) => {
 }
 
 const updateConfig = () => {
-    if (bdsPath !== undefined) {
-        io.emit("path", bdsPath);
+    if (appConfig !== undefined) {
+        io.emit("config", JSON.stringify(appConfig));
     }
 };
 
@@ -177,6 +199,7 @@ const sendData = (data) => {
     updateDifficulty(txtData);
     updateUsers(txtData);
     updateItems(txtData);
+    updateGameWorld(txtData);
 
     if (txtData.trim() === "Quit correctly") {
         mbdsProc = undefined;
@@ -197,8 +220,14 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
     });
 
-    socket.on("path", (data) => {
-        bdsPath = data;
+    socket.on("config", (data) => {
+        appConfig = JSON.parse(data);
+
+        writeConfig();
+    });
+
+    socket.on("papyrusPath", (data) => {
+        appConfig.papyrusCsPath = data;
 
         writeConfig();
     });
@@ -209,7 +238,9 @@ io.on("connection", (socket) => {
         }
 
         try {
-            mbdsProc = childProcess.spawn(`${bdsPath}bedrock_server.exe`);
+            const executableFile = appConfig.type === ServerType.Windows ? "bedrock_server.exe" : "bedrock_server";
+
+            mbdsProc = childProcess.spawn(`${appConfig.bdsPath}${executableFile}`);
 
             mbdsProc.stdout.on("data", (data) => sendData(data));
             mbdsProc.stderr.on("data", (data) => sendData(data));

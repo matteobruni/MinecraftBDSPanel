@@ -18,14 +18,31 @@ html(lang="en")
                 .col
                     h2 Configuration
                     #config
-                        .input-group.mb-3
-                            input#txtPath.form-control(type="text" placeholder="Minecraft BDS Path")
-                            button#btnUpdate.btn.btn-outline-secondary(type="button") Update
+                        .row.mb-3
+                            .col
+                                input#txtBdsPath.form-control(type="text" placeholder="Minecraft BDS Path")
+                        .row.mb-3
+                            .col
+                                input#txtPapyrusPath.form-control(type="text" placeholder="Minecraft BDS Path")
+                        .row.mb-3
+                            .col
+                                button#btnUpdate.btn.btn-outline-secondary(type="button") Update
 
-                        div Mode:&nbsp;
-                            b.badge.rounded-pill.bg-danger#gameMode
-                        div Difficulty:&nbsp;
-                            b.badge.rounded-pill.bg-danger#difficulty
+                        .row.mb-3
+                            .col World:&nbsp;
+                                b.badge.rounded-pill.bg-info#world
+                        .row.mb-3
+                            .col Mode:&nbsp;
+                                b.badge.rounded-pill.bg-warning#gameMode
+                        .row.mb-3
+                            .col Difficulty:&nbsp;
+                                b.badge.rounded-pill.bg-danger#difficulty
+
+                        .row.mb-3
+                            .col
+                                .input-group
+                                    button#btnUpdateMap.btn.btn-outline-secondary(type="button") Update Map
+                                    button#showMap.btn.btn-outline-secondary(type="button") Show Map
 
             .row.mb-3
                 .col
