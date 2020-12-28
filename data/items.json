@@ -217,5 +217,105 @@
     "id": "golden_apple",
     "name": "Golden Apple",
     "values": []
+  },
+  {
+    "id": "torch",
+    "name": "Torch",
+    "values": []
+  },
+  {
+    "id": "fireworks",
+    "name": "Firework Rocket",
+    "values": []
+  },
+  {
+    "id": "anvil",
+    "name": "Anvil",
+    "values": []
+  },
+  {
+    "id": "elytra",
+    "name": "Elytra",
+    "values": []
+  },
+  {
+    "id": "netherite_pickaxe",
+    "name": "Netherite Pickaxe",
+    "values": []
+  },
+  {
+    "id": "netherite_shovel",
+    "name": "Netherite Shovel",
+    "values": []
+  },
+  {
+    "id": "netherite_axe",
+    "name": "Netherite Axe",
+    "values": []
+  },
+  {
+    "id": "netherite_sword",
+    "name": "Netherite Sword",
+    "values": []
+  },
+  {
+    "id": "netherite_hoe",
+    "name": "Netherite Hoe",
+    "values": []
+  },
+  {
+    "id": "trident",
+    "name": "Trident",
+    "values": []
+  },
+  {
+    "id": "netherite_helmet",
+    "name": "Netherite Helmet",
+    "values": []
+  },
+  {
+    "id": "netherite_chestplate",
+    "name": "Netherite Chestplate",
+    "values": []
+  },
+  {
+    "id": "netherite_leggings",
+    "name": "Netherite Leggings",
+    "values": []
+  },
+  {
+    "id": "netherite_boots",
+    "name": "Netherite Boots",
+    "values": []
+  },
+  {
+    "id": "glass",
+    "name": "Glass",
+    "values": []
+  },
+  {
+    "id": "redstone_block",
+    "name": "Block of Redstone",
+    "values": []
+  },
+  {
+    "id": "golden_rail",
+    "name": "Powered Rail",
+    "values": []
+  },
+  {
+    "id": "rail",
+    "name": "Rail",
+    "values": []
+  },
+  {
+    "id": "glowstone",
+    "name": "Glowstone",
+    "values": []
+  },
+  {
+    "id": "minecart",
+    "name": "Minecart",
+    "values": []
   }
 ]
