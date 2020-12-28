@@ -169,7 +169,7 @@ const backupReady = msg => {
 
         const papyrusCsExe = path.join(appConfig.papyrusCsPath, "PapyrusCS.exe");
         const worldPath = path.join(__dirname, "tmp", game.world);
-        const mapPath = path.join(__dirname, "map", game.world);
+        const mapPath = path.join(__dirname, "public", "map", game.world);
 
         try {
             childProcess.exec(`${papyrusCsExe} --world ${worldPath} --output ${mapPath} --dim 0`, () => {
@@ -180,22 +180,26 @@ const backupReady = msg => {
                                 try {
                                     childProcess.exec(`${papyrusCsExe} --world ${worldPath} --output ${mapPath} --dim 2`, () => {
                                         updateMapStatus = 0;
+                                        io.emit("mapUpdated");
                                     });
                                 } catch (e) {
                                     console.log(e);
                                     updateMapStatus = 0;
+                                    io.emit("mapFailed");
                                 }
                             }, 1000);
                         });
                     } catch (e) {
                         console.log(e);
                         updateMapStatus = 0;
+                        io.emit("mapFailed");
                     }
                 }, 1000);
             });
         } catch (e) {
             console.log(e);
             updateMapStatus = 0;
+            io.emit("mapFailed");
         }
     }
 };
@@ -319,6 +323,10 @@ io.on("connection", (socket) => {
     updateGameData();
     updateStatus();
 
+    if (updateMapStatus) {
+        io.emit("mapUpdating");
+    }
+
     socket.on("disconnect", () => {
     });
 
@@ -370,6 +378,7 @@ io.on("connection", (socket) => {
 
     socket.on("updateMap", () => {
         updateMapStatus = 1;
+        io.emit("mapUpdating");
 
         sendCmd("save hold");
     });

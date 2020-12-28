@@ -48,7 +48,7 @@ html(lang="en")
                             .col
                                 .input-group
                                     button#btnUpdateMap.btn.btn-outline-secondary(type="button") Update Map
-                                    button#showMap.btn.btn-outline-secondary(type="button") Show Map
+                                    button#btnShowMap.btn.btn-outline-secondary(type="button") Show Map
 
             .row.mb-3
                 .col
@@ -106,12 +106,23 @@ html(lang="en")
                         .col-2.d-grid.gap-2.my-2
                             button#btnGiveStack.btn.btn-secondary(type="button") Give Stack
 
+        #mapModal.modal.fade(tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true")
+            .modal-dialog.modal-fullscreen
+                .modal-content
+                    .modal-header
+                        h5#mapModalLabel.modal-title World Map
+                        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                    .modal-body
+                        iframe#mapFrame
+                    .modal-footer
+                        button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
+
         #giveItemModal.modal.fade(tabindex="-1" aria-labelledby="giveItemLabel" aria-hidden="true")
             .modal-dialog
                 .modal-content
                     .modal-header
-                        #giveItemLabel.modal-title Select item
-                            button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                        h5#giveItemLabel.modal-title Select item
+                        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
                     .modal-body
                         .row
                             .col-2

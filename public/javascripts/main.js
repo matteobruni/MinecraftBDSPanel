@@ -27,6 +27,9 @@ const btnEnchantShield = document.getElementById("btnEnchantShield");
 const btnThunder = document.getElementById("btnThunder");
 const btnGiveStack = document.getElementById("btnGiveStack");
 const btnUpdateMap = document.getElementById("btnUpdateMap");
+const btnShowMap = document.getElementById("btnShowMap");
+const mapFrame = document.getElementById("mapFrame");
+const mapModal = document.getElementById("mapModal");
 
 let config;
 
@@ -107,6 +110,21 @@ socket.on("status", (status) => {
         btnStart.disabled = false;
         btnStop.disabled = true;
     }
+});
+
+socket.on("mapUpdating", () => {
+    btnUpdateMap.disabled = true;
+    btnShowMap.disabled = true;
+});
+
+socket.on("mapFailed", () => {
+    btnUpdateMap.disabled = false;
+    btnShowMap.disabled = true;
+});
+
+socket.on("mapUpdated", () => {
+    btnUpdateMap.disabled = false;
+    btnShowMap.disabled = false;
 });
 
 btnStart.addEventListener("click", () => {
@@ -235,4 +253,16 @@ btnGiveStack.addEventListener("click", () => {
 
 btnUpdateMap.addEventListener("click", () => {
     socket.emit("updateMap");
+});
+
+btnShowMap.addEventListener("click", () => {
+    mapFrame.src = `/map/${world.innerText}/map/map.html`;
+
+    const modal = new bootstrap.Modal(mapModal, {
+        backdrop: "static",
+        keyboard: false,
+        focus: true
+    });
+
+    modal.show();
 });
