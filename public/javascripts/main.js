@@ -12,6 +12,8 @@ const users = document.getElementById("users");
 const fastTarget = document.getElementById("fastTarget");
 const txtBdsPath = document.getElementById("txtBdsPath");
 const txtPapyrusPath = document.getElementById("txtPapyrusPath");
+const bdsTypeWindows = document.getElementById("bdsTypeWindows");
+const bdsTypeUbuntu = document.getElementById("bdsTypeUbuntu");
 const txtConsole = document.getElementById("txtConsole");
 const btnFullSet = document.getElementById("btnFullSet");
 const btnEnchantHelmet = document.getElementById("btnEnchantHelmet");
@@ -24,6 +26,7 @@ const btnEnchantBow = document.getElementById("btnEnchantBow");
 const btnEnchantShield = document.getElementById("btnEnchantShield");
 const btnThunder = document.getElementById("btnThunder");
 const btnGiveStack = document.getElementById("btnGiveStack");
+const btnUpdateMap = document.getElementById("btnUpdateMap");
 
 let config;
 
@@ -56,8 +59,16 @@ socket.on("data", (data) => {
 socket.on("config", (data) => {
     config = JSON.parse(data);
 
-    txtBdsPath.value = config.bdsPath;
-    txtPapyrusPath.value = config.papyrusCsPath;
+    if (config.bdsPath) {
+        txtBdsPath.value = config.bdsPath;
+    }
+
+    if (config.papyrusCsPath) {
+        txtPapyrusPath.value = config.papyrusCsPath;
+    }
+
+    bdsTypeWindows.checked = config.type.toString() === bdsTypeWindows.value;
+    bdsTypeUbuntu.checked = config.type.toString() === bdsTypeUbuntu.value;
 });
 
 socket.on("game", (data) => {
@@ -220,4 +231,8 @@ btnGiveStack.addEventListener("click", () => {
     const stackCount = parseInt(prompt("Choose how many stacks", "1"));
 
     sendQuickCommand(`give @p ${itemId} ${stackCount * 64} ${dvId}`);
+});
+
+btnUpdateMap.addEventListener("click", () => {
+    socket.emit("updateMap");
 });

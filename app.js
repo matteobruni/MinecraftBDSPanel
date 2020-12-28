@@ -4,7 +4,8 @@ const helmet = require('helmet');
 const stylus = require('stylus');
 const socketIO = require("socket.io");
 const childProcess = require("child_process");
-const fs = require("fs");
+const fs = require("fs-extra");
+const path = require("path");
 
 const configPath = "./config.json";
 const itemsPath = "./data/items.json";
@@ -14,7 +15,7 @@ const io = socketIO(http);
 
 //app.use(helmet()); // Safari requires https, probably a bug
 
-let mbdsProc, appConfig, bufLine = "", giving;
+let mbdsProc, appConfig, bufLine = "", giving, updateMapStatus = 0;
 const game = {
     connectedUsers: []
 };
@@ -72,8 +73,11 @@ const connectedRegex = /Player connected: ([^,]+),/i;
 const disconnectedRegex = /Player disconnected: ([^,]+),/i;
 const gaveRegex = /Gave (.*) \* \d+/i;
 const openingWorldRegex = /opening worlds\/(.*)\/db/i;
+const saveHoldDoneRegex = /Saving.../i
+const saveQueryReadyRegex = /Data saved. Files are now ready to be copied./i
+const saveQueryNotReadyRegex = /A previous save has not been completed./i;
 
-const updateGameWorld = (msg) => {
+const updateGameWorld = msg => {
     let matches = msg.match(openingWorldRegex);
 
     if (matches) {
@@ -83,7 +87,7 @@ const updateGameWorld = (msg) => {
     }
 }
 
-const updateGameMode = (msg) => {
+const updateGameMode = msg => {
     let matches = msg.match(gameModeRegex);
 
     if (matches) {
@@ -93,7 +97,7 @@ const updateGameMode = (msg) => {
     }
 };
 
-const updateDifficulty = (msg) => {
+const updateDifficulty = msg => {
     let matches = msg.match(difficultyRegex)
 
     if (matches) {
@@ -103,7 +107,7 @@ const updateDifficulty = (msg) => {
     }
 };
 
-const updateUsers = (msg) => {
+const updateUsers = msg => {
     let matches = msg.match(connectedRegex);
 
     if (matches) {
@@ -123,7 +127,80 @@ const updateUsers = (msg) => {
     }
 };
 
-const updateItems = (msg) => {
+const queryBackup = () => {
+    setTimeout(() => {
+        sendCmd("save query");
+    }, 500);
+};
+
+const preparingBackup = msg => {
+    let matches = msg.match(saveHoldDoneRegex);
+
+    if (!matches) {
+        return;
+    }
+
+    if (updateMapStatus === 1) {
+        updateMapStatus = 2;
+
+        queryBackup();
+    }
+};
+
+const backupReady = msg => {
+    let matches = msg.match(saveQueryReadyRegex);
+
+    if (!matches) {
+        matches = msg.match(saveQueryNotReadyRegex);
+
+        if (updateMapStatus === 2 && matches) {
+            queryBackup();
+        }
+
+        return;
+    }
+
+    if (updateMapStatus === 2) {
+        updateMapStatus = 3;
+
+        fs.copySync(path.join(appConfig.bdsPath, "worlds", game.world), path.join(__dirname, "tmp", game.world));
+
+        sendCmd("save resume");
+
+        const papyrusCsExe = path.join(appConfig.papyrusCsPath, "PapyrusCS.exe");
+        const worldPath = path.join(__dirname, "tmp", game.world);
+        const mapPath = path.join(__dirname, "map", game.world);
+
+        try {
+            childProcess.exec(`${papyrusCsExe} --world ${worldPath} --output ${mapPath} --dim 0`, () => {
+                setTimeout(() => {
+                    try {
+                        childProcess.exec(`${papyrusCsExe} --world ${worldPath} --output ${mapPath} --dim 1`, () => {
+                            setTimeout(() => {
+                                try {
+                                    childProcess.exec(`${papyrusCsExe} --world ${worldPath} --output ${mapPath} --dim 2`, () => {
+                                        updateMapStatus = 0;
+                                    });
+                                } catch (e) {
+                                    console.log(e);
+                                    updateMapStatus = 0;
+                                }
+                            }, 1000);
+                        });
+                    } catch (e) {
+                        console.log(e);
+                        updateMapStatus = 0;
+                    }
+                }, 1000);
+            });
+        } catch (e) {
+            console.log(e);
+            updateMapStatus = 0;
+        }
+    }
+};
+
+const updateItems = msg => {
     try {
         let matches = msg.match(gaveRegex);
 
@@ -160,7 +237,7 @@ const updateItems = (msg) => {
     } catch (e) {
         console.log(e);
     }
-}
+};
 
 const updateConfig = () => {
     if (appConfig !== undefined) {
@@ -176,7 +253,7 @@ const updateGameData = () => {
     io.emit("game", JSON.stringify(game));
 };
 
-const sendData = (data) => {
+const sendData = data => {
     if (data) {
         bufLine += data.toString("utf-8");
     }
@@ -200,6 +277,8 @@ const sendData = (data) => {
     updateUsers(txtData);
     updateItems(txtData);
     updateGameWorld(txtData);
+    preparingBackup(txtData);
+    backupReady(txtData);
 
     if (txtData.trim() === "Quit correctly") {
         mbdsProc = undefined;
@@ -211,6 +290,29 @@ const sendData = (data) => {
         sendData();
     }
 };
+
+const sendCmd = text => {
+    const cmd = `${text}\n`;
+
+    const tokens = text.split(" ");
+    const giveIdx = tokens.indexOf("give");
+
+    if (giveIdx >= 0) {
+        const itemId = tokens[giveIdx + 2];
+        const value = tokens[giveIdx + 4] || 0;
+
+        if (itemId) {
+            giving = {
+                itemId,
+                value
+            };
+        }
+    }
+
+    sendData(cmd);
+
+    mbdsProc.stdin.write(cmd);
+}
 
 io.on("connection", (socket) => {
     updateConfig();
@@ -240,7 +342,7 @@ io.on("connection", (socket) => {
         try {
             const executableFile = appConfig.type === ServerType.Windows ? "bedrock_server.exe" : "bedrock_server";
 
-            mbdsProc = childProcess.spawn(`${appConfig.bdsPath}${executableFile}`);
+            mbdsProc = childProcess.spawn(path.join(appConfig.bdsPath, executableFile));
 
             mbdsProc.stdout.on("data", (data) => sendData(data));
             mbdsProc.stderr.on("data", (data) => sendData(data));
@@ -263,26 +365,13 @@ io.on("connection", (socket) => {
     });
 
     socket.on("cmd", (text) => {
-        const cmd = `${text}\n`;
+        sendCmd(text);
+    });
 
-        const tokens = text.split(" ");
-        const giveIdx = tokens.indexOf("give");
+    socket.on("updateMap", () => {
+        updateMapStatus = 1;
 
-        if (giveIdx >= 0) {
-            const itemId = tokens[giveIdx + 2];
-            const value = tokens[giveIdx + 4] || 0;
-
-            if (itemId) {
-                giving = {
-                    itemId,
-                    value
-                };
-            }
-        }
-
-        sendData(cmd);
-
-        mbdsProc.stdin.write(cmd);
+        sendCmd("save hold");
     });
 });
 
