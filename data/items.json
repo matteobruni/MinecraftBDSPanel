@@ -1,0 +1,221 @@
+[
+  {
+    "id": "apple",
+    "name": "Apple",
+    "values": []
+  },
+  {
+    "id": "armor_stand",
+    "name": "Armor Stand",
+    "values": []
+  },
+  {
+    "id": "arrow",
+    "name": "Arrow",
+    "values": []
+  },
+  {
+    "id": "baked_potato",
+    "name": "Baked Potato",
+    "values": []
+  },
+  {
+    "id": "beetroot",
+    "name": "Beetroot",
+    "values": []
+  },
+  {
+    "id": "beetroot_seeds",
+    "name": "Beetroot Seeds",
+    "values": []
+  },
+  {
+    "id": "beetroot_soup",
+    "name": "Beetroot Soup",
+    "values": []
+  },
+  {
+    "id": "boat",
+    "name": "Boat",
+    "values": [
+      {
+        "type": "Oak",
+        "data": 0
+      },
+      {
+        "type": "Spruce",
+        "data": 1
+      },
+      {
+        "type": "Birch",
+        "data": 2
+      },
+      {
+        "type": "Jungle",
+        "data": 3
+      },
+      {
+        "type": "Acacia",
+        "data": 4
+      },
+      {
+        "type": "Dark Oak",
+        "data": 5
+      }
+    ]
+  },
+  {
+    "id": "xp_bottle",
+    "name": "Bottle o' Enchanting",
+    "values": []
+  },
+  {
+    "id": "bone",
+    "name": "Bone",
+    "values": []
+  },
+  {
+    "id": "bone_meal",
+    "name": "Bone Meal",
+    "values": []
+  },
+  {
+    "id": "bow",
+    "name": "Bow",
+    "values": []
+  },
+  {
+    "id": "bucket",
+    "name": "Bucket",
+    "values": [
+      {
+        "type": "Empty",
+        "data": 0
+      },
+      {
+        "type": "Milk",
+        "data": 1
+      },
+      {
+        "type": "Cod",
+        "data": 2
+      },
+      {
+        "type": "Salmon",
+        "data": 3
+      },
+      {
+        "type": "Tropical",
+        "data": 4
+      },
+      {
+        "type": "Pufferfish",
+        "data": 5
+      },
+      {
+        "type": "Water",
+        "data": 8
+      },
+      {
+        "type": "Lava",
+        "data": 10
+      }
+    ]
+  },
+  {
+    "id": "dye",
+    "name": "Dye",
+    "values": [
+      {
+        "type": "Ink Sac",
+        "data": 0
+      },
+      {
+        "type": "Red",
+        "data": 1
+      },
+      {
+        "type": "Green",
+        "data": 2
+      },
+      {
+        "type": "Cocoa Beans",
+        "data": 3
+      },
+      {
+        "type": "Lapis Lazuli",
+        "data": 4
+      },
+      {
+        "type": "Purple",
+        "data": 5
+      },
+      {
+        "type": "Cyan",
+        "data": 6
+      },
+      {
+        "type": "Light Gray",
+        "data": 7
+      },
+      {
+        "type": "Gray",
+        "data": 8
+      },
+      {
+        "type": "Pink",
+        "data": 9
+      },
+      {
+        "type": "Lime",
+        "data": 10
+      },
+      {
+        "type": "Yellow",
+        "data": 11
+      },
+      {
+        "type": "Light Blue",
+        "data": 12
+      },
+      {
+        "type": "Magenta",
+        "data": 13
+      },
+      {
+        "type": "Orange",
+        "data": 14
+      },
+      {
+        "type": "Bone Meal",
+        "data": 15
+      },
+      {
+        "type": "Black",
+        "data": 16
+      },
+      {
+        "type": "Brown",
+        "data": 17
+      },
+      {
+        "type": "Blue",
+        "data": 18
+      },
+      {
+        "type": "White",
+        "data": 19
+      }
+    ]
+  },
+  {
+    "id": "carrot",
+    "name": "Carrot",
+    "values": []
+  },
+  {
+    "id": "golden_apple",
+    "name": "Golden Apple",
+    "values": []
+  }
+]

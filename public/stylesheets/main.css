@@ -1,0 +1,7 @@
+#output {
+  height: 400px;
+  overflow: auto;
+  border: 1px solid #d3d3d3;
+  color: #fff;
+  background: #000;
+}
