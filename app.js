@@ -210,32 +210,49 @@ const updateItems = msg => {
 
         if (matches && giving) {
             fs.readFile(itemsPath, (err, data) => {
-                const items = JSON.parse(data.toString("utf-8"));
-                let item = items.find(t => t.id === giving.itemId);
+if (!giving) {
+console.log("no giving present");
 
-                if (!item) {
-                    item = {
-                        id: giving.itemId,
-                        name: matches[1],
-                        values: []
-                    };
+    return;
+}
 
-                    items.push(item);
+                if (err) {
+                    console.log(err);
+
+                    return;
                 }
 
-                if (!item.values.find(t => t.data === giving.value) && (
-                    (item.values.length) ||
-                    (!item.values.length && giving.value > 0)
-                )) {
-                    item.values.push({
-                        data: giving.value,
-                        name: matches[0]
+                try {
+                    const items = JSON.parse(data.toString("utf-8"));
+
+                    let item = items.find(t => t.id === giving.itemId);
+
+                    if (!item) {
+                        item = {
+                            id: giving.itemId,
+                            name: matches[1],
+                            values: []
+                        };
+
+                        items.push(item);
+                    }
+
+                    if (!item.values.find(t => t.data === giving.value) && (
+                        (item.values.length) ||
+                        (!item.values.length && giving.value > 0)
+                    )) {
+                        item.values.push({
+                            data: giving.value,
+                            name: matches[0]
+                        });
+                    }
+
+                    fs.writeFile(itemsPath, JSON.stringify(items, undefined, 2), () => {
+                        giving = undefined;
                     });
+                } catch (ex) {
+                    console.log(ex);
                 }
-
-                fs.writeFile(itemsPath, JSON.stringify(items), () => {
-                    giving = undefined;
-                });
             });
         }
     } catch (e) {
@@ -314,6 +331,12 @@ const sendCmd = text => {
     }
 
     sendData(cmd);
+
+    if (!mbdsProc) {
+        console.log("process not started");
+
+        return;
+    }
 
     mbdsProc.stdin.write(cmd);
 }
