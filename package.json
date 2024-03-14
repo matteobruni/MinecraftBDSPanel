@@ -9,7 +9,7 @@
     "express": "4.18.3",
     "helmet": "7.1.0",
     "pug": "3.0.2",
-    "socket.io": "4.7.3",
+    "socket.io": "4.7.5",
     "stylus": "0.63.0",
     "fs-extra": "11.2.0"
   }
